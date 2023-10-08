@@ -1,0 +1,64 @@
+name: API Load Test Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies and Run Pre-commit Tests
+        run: |
+          # Assuming you have pre-commit hooks defined in your project
+          pip install pre-commit
+          pre-commit run --all-files
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: my-api-image:latest
+
+  security_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scan Docker Image for Vulnerabilities
+        uses: anchore/scan-action@v2
+        with:
+          image-ref: my-api-image:latest
+
+  load_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Start Locust Container
+        run: docker run --name locust -e TARGET_URL=http://172.30.4.48:5009/ -e LOCUST_FILE=locustfile.py -p 8089:8089 locustio/locust
+
+      - name: Run Locust Load Test
+        run: |
+          pip install requests
+          python locust_tests.py
+
+      - name: Stop and Remove Locust Container
+        run: docker stop locust && docker rm locust
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy Docker Image
+        uses: docker/deploy-action@v1
+        with:
+          name: my-api
+          image: my-api-image:latest
