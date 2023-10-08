@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the local app.py file into the container at /app
 COPY app.py .
-COPY requirement.txt .
+COPY requirements.txt .
 
 # Install Flask
 RUN pip install --upgrade pip && \
