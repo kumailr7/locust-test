@@ -38,13 +38,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Start Locust Container
-        run: docker run --name locust -e TARGET_URL=http://172.30.4.48:5009/ -e LOCUST_FILE=/home/runner/work/locust-test/locust-test/locustfile.py -p 8089:8089 locustio/locust
-
-      - name: Run Locust Load Test
+      - name: Show Current Working Directory
         run: |
-          pip install requests
-          python locust_tests.py
+          pwd
 
-      - name: Stop and Remove Locust Container
-        run: docker stop locust && docker rm locust
+      - name: List Repository Contents
+        run: ls -R
+
+    #   - name: Start Locust Container
+    #     run: docker run --name locust -e TARGET_URL=http://172.30.4.48:5009/ -e LOCUST_FILE=/home/runner/work/locust-test/locust-test/locustfile.py -p 8089:8089 locustio/locust
+
+    #   - name: Run Locust Load Test
+    #     run: |
+    #       pip install requests
+    #       python locust_tests.py
+
+    #   - name: Stop and Remove Locust Container
+    #     run: docker stop locust && docker rm locust
