@@ -3,7 +3,7 @@ name: API Load Test Workflow
 on:
   push:
     branches:
-      - main
+      - Dev
 
 jobs:
   build:
@@ -26,14 +26,8 @@ jobs:
           push: false
           tags: my-api-image:latest
 
-  security_scan:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Scan Docker Image for Vulnerabilities
-        uses: anchore/scan-action@v2
-        with:
-          image-ref: my-api-image:latest
+      - name: Scan Docker Image
+        run: docker-scout scan my-api-image
 
   load_test:
     runs-on: ubuntu-latest
@@ -52,13 +46,3 @@ jobs:
 
       - name: Stop and Remove Locust Container
         run: docker stop locust && docker rm locust
-
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy Docker Image
-        uses: docker/deploy-action@v1
-        with:
-          name: my-api
-          image: my-api-image:latest
