@@ -9,8 +9,8 @@ COPY app.py .
 COPY requirement.txt .
 
 # Install Flask
-RUN pip upgrade && \
-    pip install -r requirement.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Expose port 5009 to the outside world
 EXPOSE 5009
